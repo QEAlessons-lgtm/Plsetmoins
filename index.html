@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>منصة الجمع والطرح</title>
+<style>
+:root{--orange:#ff9f43;--peach:#fff0dc;--blue:#5ec8e8;--green:#53b879;--purple:#ad70c7;--ink:#243247}
+*{box-sizing:border-box}body{margin:0;font-family:Tahoma,Arial,sans-serif;background:linear-gradient(135deg,#fff8ed,#eaf8ff);color:var(--ink)}
+header{background:linear-gradient(110deg,#ffb45c,#ff8e48);color:#fff;text-align:center;padding:22px 14px;border-radius:0 0 28px 28px;box-shadow:0 5px 18px #e99b5830}
+header h1{margin:0;font-size:clamp(24px,5vw,38px)}header p{margin:8px 0 0;font-size:17px}
+.wrap{max-width:1050px;margin:20px auto;padding:0 14px}.stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:15px 0}.stat{background:#fff;padding:10px 18px;border-radius:16px;box-shadow:0 3px 12px #0000000b;font-weight:bold}
+.tabs{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:18px 0}.tab{border:0;border-radius:14px;padding:12px 18px;font-size:16px;font-weight:bold;cursor:pointer;background:#fff;color:#475569;box-shadow:0 3px 10px #00000010}.tab.active{background:#4bb6d9;color:white}
+.panel{background:#fff;border-radius:24px;padding:clamp(16px,4vw,28px);box-shadow:0 8px 25px #4b657a12;margin-bottom:20px}
+h2{color:#e77935;margin-top:0}.question{font-size:clamp(21px,4vw,29px);line-height:1.7;text-align:center;background:#fff7eb;border:2px dashed #ffc17e;padding:20px;border-radius:20px;margin:12px 0}
+.read{display:block;margin:12px auto;border:0;background:#7a61c9;color:white;padding:12px 20px;border-radius:14px;font-size:17px;cursor:pointer}
+.answers{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:20px 0}.answer{border:2px solid #dceaf1;background:#f7fcff;border-radius:16px;padding:17px;font-size:23px;font-weight:bold;cursor:pointer;transition:.15s}.answer:hover{transform:translateY(-2px);border-color:#66c6df}.answer.correct{background:#dff8e8;border-color:#48b878}.answer.wrong{background:#ffe4e4;border-color:#ed7777}
+.feedback{text-align:center;font-size:20px;font-weight:bold;min-height:32px}.btn{border:0;border-radius:14px;padding:13px 20px;font-size:17px;font-weight:bold;cursor:pointer;background:#ff9f43;color:white}.btn.secondary{background:#5bbbd8}.btn.purple{background:#9b70c6}.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.hidden{display:none}.gamegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}.gamecard{background:#fff8ed;border:2px solid #ffe0b8;border-radius:18px;padding:16px;text-align:center}.gamecard h3{margin:5px;color:#b9672e}.numline{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin:15px 0}.numline span{background:#e9f7ff;border:1px solid #9bd8ee;border-radius:7px;padding:7px 9px;font-weight:bold}
+input{font-size:22px;padding:10px;border:2px solid #cbdde8;border-radius:12px;width:110px;text-align:center}
+footer{text-align:center;color:#718096;padding:20px}
+</style></head>
+<body>
+<header><h1>🧮 مغامرات الجمع والطرح</h1><p>نتعلّم بالحساب واللعب والاستماع إلى السؤال!</p></header>
+<div class="wrap">
+<div class="stats"><div class="stat">⭐ النقاط: <span id="score">0</span></div><div class="stat">🎯 الإجابات الصحيحة: <span id="right">0</span></div><div class="stat">📚 المستوى: السنة الأولى ابتدائي</div></div>
+<div class="tabs"><button class="tab active" onclick="show('quiz',this)">🎲 تحدّي الحساب</button><button class="tab" onclick="show('story',this)">🧺 مسائل من الحياة</button><button class="tab" onclick="show('games',this)">🎮 ألعاب سريعة</button></div>
+<section id="quiz" class="panel"><h2>🎲 تحدّي الحساب</h2><p style="text-align:center">اختر الإجابة الصحيحة. مكان الإجابة يتغيّر في كل مرة!</p><div id="q" class="question"></div><button class="read" onclick="speakCurrent()">🔊 اضغط هنا لسماع السؤال</button><div id="answers" class="answers"></div><div id="feedback" class="feedback"></div><div class="actions"><button class="btn" onclick="newQuestion()">سؤال جديد ↻</button><button class="btn secondary" onclick="speakCurrent()">🔊 أعد الاستماع</button></div></section>
+<section id="story" class="panel hidden"><h2>🧺 مسائل من الحياة اليومية</h2><div id="storyq" class="question"></div><button class="read" onclick="speakStory()">🔊 استمع إلى المسألة</button><div style="text-align:center;margin:15px"><input id="storyans" type="number" placeholder="؟"><button class="btn" onclick="checkStory()">تحقّق</button></div><div id="storyfeedback" class="feedback"></div><div class="actions"><button class="btn secondary" onclick="newStory()">مسألة أخرى ↻</button></div></section>
+<section id="games" class="panel hidden"><h2>🎮 ألعاب ممتعة</h2><div class="gamegrid"><div class="gamecard"><h3>🧠 أكمل العملية</h3><div id="missing" class="question">8 + ؟ = 14</div><input id="missingans" type="number" placeholder="؟"><p><button class="btn" onclick="checkMissing()">تحقّق</button> <button class="btn secondary" onclick="newMissing()">جديد</button></p><div id="missingfb" class="feedback"></div></div><div class="gamecard"><h3>📏 خطّ الأعداد</h3><p>ابدأ من <b id="startnum">7</b>، وتقدّم <b id="stepnum">5</b> خطوات.</p><div class="numline" id="line"></div><button class="read" onclick="speakLine()">🔊 اسمع التعليمات</button><p><input id="lineans" type="number" placeholder="وصلت إلى؟"></p><button class="btn" onclick="checkLine()">تحقّق</button> <button class="btn secondary" onclick="newLine()">جولة جديدة</button><div id="linefb" class="feedback"></div></div></div></section>
+</div><footer>🌟 أحسنت! كل محاولة تساعدك على التعلّم.</footer>
+<script>
+let score=0,right=0,current=null,story=null,missing=null,lineData=null;
+function speak(t){if(!('speechSynthesis'in window)){alert('ميزة القراءة غير متاحة في هذا المتصفح');return}speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang='ar-SA';u.rate=.85;speechSynthesis.speak(u)}
+function show(id,btn){document.querySelectorAll('section').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
+function update(){document.getElementById('score').textContent=score;document.getElementById('right').textContent=right}
+function shuffle(a){return a.sort(()=>Math.random()-.5)}
+function newQuestion(){let a=Math.floor(Math.random()*20)+1,b=Math.floor(Math.random()*10)+1,add=Math.random()>.45,ans=add?a+b:Math.max(a,b)-Math.min(a,b),x=add?a:Math.max(a,b),y=add?b:Math.min(a,b);current={text:`${x} ${add?'+':'−'} ${y} = ؟`,ans};document.getElementById('q').textContent=current.text;document.getElementById('feedback').textContent='';let opts=new Set([ans]);while(opts.size<4)opts.add(Math.max(0,ans+Math.floor(Math.random()*11)-5));let arr=shuffle([...opts]);let box=document.getElementById('answers');box.innerHTML='';arr.forEach(n=>{let bt=document.createElement('button');bt.className='answer';bt.textContent=n;bt.onclick=()=>answer(bt,n);box.appendChild(bt)});}
+function answer(btn,n){if(document.querySelector('.answer.correct,.answer.wrong'))return;if(n===current.ans){btn.classList.add('correct');document.getElementById('feedback').textContent='🎉 رائع! إجابة صحيحة';score+=1;right+=1}else{btn.classList.add('wrong');document.getElementById('feedback').textContent='💡 حاول مرة أخرى! الإجابة الصحيحة هي '+current.ans;document.querySelectorAll('.answer').forEach(b=>{if(+b.textContent===current.ans)b.classList.add('correct')})}update()}
+function speakCurrent(){speak('احسب: '+current.text)}
+function newStory(){let type=Math.random()>.5,a,b,txt,ans;if(type){a=13;b=5;ans=18;txt='تملك مريم 13 بطاقة، وتحصلت خلال الأسبوع الأخير على 5 بطاقات أخرى. كم بطاقة أصبحت عند مريم الآن؟'}else{a=20;b=8;ans=12;txt='يملك أمين 20 قرطاسًا، أعطى لصديقه 8 قرطاسات. كم قرطاسًا بقي عند أمين؟'}story={txt,ans};document.getElementById('storyq').textContent=txt;document.getElementById('storyans').value='';document.getElementById('storyfeedback').textContent=''}
+function speakStory(){speak(story.txt)}
+function checkStory(){let n=+document.getElementById('storyans').value;document.getElementById('storyfeedback').textContent=n===story.ans?'🌟 ممتاز! أحسنت.':'جرّب مجددًا. تذكّر: '+story.ans; if(n===story.ans){score++;right++;update()}}
+function newMissing(){let a=Math.floor(Math.random()*15)+3,b=Math.floor(Math.random()*a),add=Math.random()>.5;missing={a,b,ans:add?b:a-b,txt:add?`${a-b} + ؟ = ${a}`:`${a} − ؟ = ${a-b}`};document.getElementById('missing').textContent=missing.txt;document.getElementById('missingans').value='';document.getElementById('missingfb').textContent=''}
+function checkMissing(){let n=+document.getElementById('missingans').value;document.getElementById('missingfb').textContent=n===missing.ans?'🎉 صحيح!':'ليس بعد، الإجابة '+missing.ans;if(n===missing.ans){score++;right++;update()}}
+function newLine(){let s=Math.floor(Math.random()*10)+1,k=Math.floor(Math.random()*8)+2;lineData={s,k,ans:s+k};document.getElementById('startnum').textContent=s;document.getElementById('stepnum').textContent=k;let l=document.getElementById('line');l.innerHTML='';for(let i=1;i<=24;i++){let sp=document.createElement('span');sp.textContent=i;l.appendChild(sp)}document.getElementById('lineans').value='';document.getElementById('linefb').textContent=''}
+function speakLine(){speak(`ابدأ من ${lineData.s} وتقدم ${lineData.k} خطوات. إلى أي عدد تصل؟`)}
+function checkLine(){let n=+document.getElementById('lineans').value;document.getElementById('linefb').textContent=n===lineData.ans?'👏 أحسنت! وصلت إلى '+n:'حاول ثانية. العدد الصحيح '+lineData.ans;if(n===lineData.ans){score++;right++;update()}}
+newQuestion();newStory();newMissing();newLine();
+</script></body></html>
